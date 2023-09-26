@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -12,9 +13,6 @@ public class PlayerMovement : MonoBehaviour
     public Rigidbody2D player;
 
     public Vector2 movement;
-
-    public string tag;
-    public Dictionary<string, GameObject> collisions;
 
     public List<GameObject> targets;
 
@@ -36,15 +34,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        tag = collision.tag;
         targets.Add(collision.gameObject);
-        //collisions.Add(collision.gameObject.GetComponent<GameElement>().ObjectId, collision.gameObject);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         targets.Remove(collision.gameObject);
-        //collisions.Remove(collision.gameObject.GetComponent<GameElement>().ObjectId);
     }
 
     private void GetAxys()
@@ -65,13 +60,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Attack()
     {
-        if (Input.GetButtonDown("Fire1") && tag == "enemigo")
-        {
-            targets.ForEach(target =>
-            {
-                var enemy = target.GetComponent<HealthController>();
-                enemy.GetDamage(2);
-            });
-        }
+        if (Input.GetButtonDown("Fire1"))
+            targets.Where(t => t.CompareTag("enemy")).ToList().ForEach(target => target.GetComponent<HealthController>().GetDamage(2));
     }
 }
